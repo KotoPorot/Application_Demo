@@ -15,6 +15,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,8 +37,9 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(customizer -> customizer.disable()).
-                authorizeHttpRequests(request -> request
+        httpSecurity.csrf(customizer -> customizer.disable())
+                .cors(cors->cors.configurationSource(request -> corsConfiguration()))
+                        .authorizeHttpRequests(request -> request
                         .requestMatchers("/login", "/register").permitAll()
                         .anyRequest().authenticated());
 
@@ -58,5 +63,31 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+
+    @Bean
+    public CorsConfiguration corsConfiguration(){
+        CorsConfiguration configuration = new CorsConfiguration();
+        List<String> allowedOrigins = new ArrayList<>();
+        List<String> allowedMethods = new ArrayList<>();
+        List<String> allowedHeaders = new ArrayList<>();
+
+        allowedOrigins.add("http://localhost:5173");
+        allowedOrigins.add("http://localhost:3000");
+
+        allowedMethods.add("GET");
+        allowedMethods.add("POST");
+        allowedMethods.add("PUT");
+        allowedMethods.add("DELETE");
+        allowedMethods.add("OPTIONS");
+
+        allowedHeaders.add("*");
+
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedHeaders(allowedHeaders);
+        configuration.setAllowedMethods(allowedMethods);
+        configuration.setAllowCredentials(true);
+        return configuration;
+  }
 
 }
