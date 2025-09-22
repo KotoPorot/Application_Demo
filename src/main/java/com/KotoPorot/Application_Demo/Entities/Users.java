@@ -3,6 +3,7 @@ package com.KotoPorot.Application_Demo.Entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +18,13 @@ public class Users {
 
     private String password;
     private Role role;
+
+    @ManyToMany
+            @JoinTable(
+                    name = "boards_subs",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "board_id"))
+    List<Board> subscribe;
 
 
     public Users() {
