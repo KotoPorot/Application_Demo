@@ -1,5 +1,6 @@
 package com.KotoPorot.Application_Demo.Entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class Board {
     private String owner;
 
     @ManyToMany(mappedBy = "subscribe")
+    @JsonManagedReference
     List<Users> subscribers;
 
 
@@ -50,5 +52,14 @@ public class Board {
 
     public void setSubscribers(List<Users> subscribers) {
         this.subscribers = subscribers;
+    }
+    public List<Users> addSubscriber(Users user){
+       if (user!=null&&!subscribers.contains(user)){
+           subscribers.add(user);
+           if(!user.getSubscribe().contains(this)){
+               user.getSubscribe().add(this);
+           }
+       }
+       return subscribers;
     }
 }

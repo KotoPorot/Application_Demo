@@ -5,6 +5,7 @@ import com.KotoPorot.Application_Demo.Login_registration.DTO.UsersRegistrationDT
 import com.KotoPorot.Application_Demo.Login_registration.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +15,7 @@ public class LoginController {
     private UserService userService;
 
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String loginForm(@RequestBody UsersRegistrationDTO usersRegistrationDTO){
         return userService.verify(usersRegistrationDTO);
     }

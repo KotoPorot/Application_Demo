@@ -1,6 +1,7 @@
 package com.KotoPorot.Application_Demo.Entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class Users {
                     name = "boards_subs",
             joinColumns = @JoinColumn(name = "users_id"),
             inverseJoinColumns = @JoinColumn(name = "board_id"))
+    @JsonBackReference
     List<Board> subscribe;
 
 
@@ -60,6 +62,14 @@ public class Users {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public List<Board> getSubscribe() {
+        return subscribe;
+    }
+
+    public void setSubscribe(List<Board> subscribe) {
+        this.subscribe = subscribe;
     }
 
     @Override
