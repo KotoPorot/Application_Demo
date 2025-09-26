@@ -14,7 +14,7 @@ git clone <repository-url>
 2. **Change directory**
 
 ```bash
-git checkout feat/frontend
+git checkout -b backAndFront origin/backAndFront
 cd frontend
 ```
 
