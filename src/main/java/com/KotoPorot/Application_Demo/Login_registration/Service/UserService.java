@@ -1,7 +1,7 @@
 package com.KotoPorot.Application_Demo.Login_registration.Service;
 
 
-import com.KotoPorot.Application_Demo.Entities.Role;
+import com.KotoPorot.Application_Demo.Enums.Role;
 import com.KotoPorot.Application_Demo.Entities.Users;
 import com.KotoPorot.Application_Demo.Login_registration.DTO.UsersRegistrationDTO;
 import com.KotoPorot.Application_Demo.Repositories.UserRepository;
@@ -36,7 +36,6 @@ public class UserService {
         Users newUser = new Users();
         newUser.setUsername(userDTO.getUsername());
         newUser.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
-        newUser.setRole(Role.USER);          //DEFAULT!
         return userRepository.save(newUser);
     }
 

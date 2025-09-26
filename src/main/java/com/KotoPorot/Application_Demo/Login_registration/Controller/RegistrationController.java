@@ -20,8 +20,12 @@ public class RegistrationController {
 
     @PostMapping("/register")
     public ResponseEntity<Users> register(@RequestBody UsersRegistrationDTO userData){
+        if(userService.findByUsername(userData.getUsername())==null){
         Users newUser = userService.addUser(userData);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
     }
 
 }
