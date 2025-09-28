@@ -1,5 +1,4 @@
 export default function Login(element) {
-	let TOKEN = undefined;
 	element.innerHTML = `
       <input type="text" name="username" placeholder="username" />
 			<input id="password" type="password" name="password" placeholder="password" />
@@ -14,10 +13,10 @@ export default function Login(element) {
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ username: username, password: password }),
 		})
-			.then((res) => res.text())
+			.then((response) => response.text())
 			.then((data) => {
-				TOKEN = data;
-			})
-			.then(() => console.log("Registered, token:", TOKEN));
+				localStorage.setItem("TOKEN", data);
+				document.location.reload();
+			});
 	});
 }

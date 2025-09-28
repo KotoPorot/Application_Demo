@@ -1,6 +1,6 @@
 import "./style.css";
 import Register from "./register.js";
-import Login from "./Login.js";
+import Login from "./login.js";
 
 document.querySelector("#app").innerHTML = `
   	<div class="pop-up">
@@ -12,10 +12,44 @@ document.querySelector("#app").innerHTML = `
 			<div class="pop-up__body">
 				
 			</div>
-			<!-- <button id="home" type="submit">home page</button> -->
 	</div>
 `;
+// Default view
+if (localStorage.getItem("TOKEN")) {
+	toMainPage();
+} else {
+	const popUpBody = document.querySelector(".pop-up__body");
+	Register(popUpBody);
+}
 
+function logout() {
+	localStorage.removeItem("TOKEN");
+	document.location.reload();
+}
+
+function toMainPage() {
+	fetch("http://localhost:8080/", {
+		method: "GET",
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem("TOKEN")}`,
+		},
+	})
+		.then((res) => res.text())
+		.then(() => {
+			document.querySelector("#app").innerHTML = `
+  	<div class="pop-up">
+		<span class='succeed'>You are logged in!</span>
+
+			<div class="pop-up__body">
+				<button id="logout">Logout</button>
+			</div>
+			<div>
+	</div>
+`;
+			document.getElementById("logout").addEventListener("click", logout);
+		});
+}
+// Register-Login switcher
 document.querySelector("#choose-register").addEventListener("click", (e) => {
 	e.target.classList.add("--choosed");
 	document.querySelector("#choose-login").classList.remove("--choosed");
@@ -29,11 +63,10 @@ document.querySelector("#choose-login").addEventListener("click", (e) => {
 	Login(popUpBody);
 });
 
-const popUpBody = document.querySelector(".pop-up__body");
-Register(popUpBody);
-// document.querySelector("#home").addEventListener("click", () => {
-// 	fetch("http://localhost:8080/", {
-// 		method: "GET",
-// 		headers: { "Content-Type": "application/json" },
-// 	}).then((res) => res.text());
-// });
+// Default view
+if (localStorage.getItem("TOKEN")) {
+	toMainPage();
+} else {
+	const popUpBody = document.querySelector(".pop-up__body");
+	Register(popUpBody);
+}
