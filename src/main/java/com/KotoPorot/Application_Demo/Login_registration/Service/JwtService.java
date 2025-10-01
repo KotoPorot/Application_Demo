@@ -1,6 +1,7 @@
 package com.KotoPorot.Application_Demo.Login_registration.Service;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,28 +19,29 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    private static String mySecretKey;
+    private static String mySecretKey = "X7K9pLqR8mN4jO5pLqR8mN4jO5pLqR8mN4jO5pLqR8mN";
     private static SecretKey sk;
 
-   static {
+    static {
         try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            keyGen.init(256);
-            sk = keyGen.generateKey();
-            mySecretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
+//             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//             keyGen.init(256);
+//            sk= keyGen.generateKey();
+            sk = Keys.hmacShaKeyFor(mySecretKey.getBytes());
+//           mySecretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+        } catch (Exception e) {
             throw new RuntimeException("Failed");
         }
     }
 
-    public String generateToken(String username){
+    public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .claims()
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+60L*60*1000*24))
+                .expiration(new Date(System.currentTimeMillis() + 60L * 60 * 1000 * 24))
                 .and()
                 .signWith(sk)
                 .compact();
@@ -64,6 +66,7 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
     public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));

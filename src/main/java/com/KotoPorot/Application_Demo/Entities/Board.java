@@ -19,15 +19,15 @@ public class Board {
 
     private String owner;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference(value = "board_subs")
     private List<UsersRoles> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Department> departments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Task> boardTasks = new ArrayList<>();
 
@@ -58,6 +58,26 @@ public class Board {
 
     public void setMembers(List<UsersRoles> members) {
         this.members = members;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<Department> getDepartments() {
+        return departments;
+    }
+
+    public void setDepartments(List<Department> departments) {
+        this.departments = departments;
+    }
+
+    public List<Task> getBoardTasks() {
+        return boardTasks;
+    }
+
+    public void setBoardTasks(List<Task> boardTasks) {
+        this.boardTasks = boardTasks;
     }
 
     public UsersRoles setUsersRoles(Users user, BoardRole role){
