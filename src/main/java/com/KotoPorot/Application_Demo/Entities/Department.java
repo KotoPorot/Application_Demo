@@ -1,5 +1,6 @@
 package com.KotoPorot.Application_Demo.Entities;
 
+import com.KotoPorot.Application_Demo.RequestsDTO.CreateDepDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -17,25 +18,26 @@ public class Department {
 
     private String name;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manager_id")
     private Users responsibleManager;
 
-    @OneToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "department_members",
             joinColumns = @JoinColumn(name = "department_id"),
-            inverseJoinColumns = @JoinColumn(name = "users_id")
+            inverseJoinColumns = @JoinColumn(name = "users_id"),
+            uniqueConstraints= @UniqueConstraint(columnNames = {"department_id", "users_id"})
     )
-    @JsonBackReference
+    @JsonManagedReference
     private List<Users> members = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     @JsonBackReference
     private Board board;
 
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonManagedReference
     private List<Task> departmentTasks = new ArrayList<>();
 
@@ -83,8 +85,17 @@ public class Department {
         return responsibleManager;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setResponsibleManager(Users responsibleManager) {
         this.responsibleManager = responsibleManager;
+    }
+
+    public Department(CreateDepDTO depDTO, Board board) {
+        this.name = depDTO.getName();
+        this.board = board;
     }
 
     public Department() {

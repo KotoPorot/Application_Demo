@@ -1,9 +1,13 @@
 package com.KotoPorot.Application_Demo.Services;
 
+import com.KotoPorot.Application_Demo.Entities.*;
+import com.KotoPorot.Application_Demo.Enums.TaskStatus;
+import com.KotoPorot.Application_Demo.Repositories.DepRepository;
+import com.KotoPorot.Application_Demo.Repositories.UserRepository;
+import com.KotoPorot.Application_Demo.RequestsDTO.CreateTaskDTO;
+import com.KotoPorot.Application_Demo.ResponseDTO.BoardDTO;
+import com.KotoPorot.Application_Demo.ResponseDTO.OwnerBoardDTO;
 import com.KotoPorot.Application_Demo.ResponseDTO.UserRolesDTO;
-import com.KotoPorot.Application_Demo.Entities.Board;
-import com.KotoPorot.Application_Demo.Entities.Users;
-import com.KotoPorot.Application_Demo.Entities.UsersRoles;
 import com.KotoPorot.Application_Demo.Enums.BoardRole;
 import com.KotoPorot.Application_Demo.Repositories.BoardRepository;
 import com.KotoPorot.Application_Demo.Repositories.UserRolesRepo;
@@ -11,7 +15,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +26,10 @@ public class BoardService {
     private BoardRepository boardRepository;
     @Autowired
     private UserRolesRepo userRolesRepo;
+    @Autowired
+    private DepRepository depRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     public UserRolesDTO createBoard(String name, Users user) {
@@ -27,7 +37,13 @@ public class BoardService {
         board.setOwner(user.getUsername());
         board.setName(name);
         board.getMembers().add(new UsersRoles(user, board, BoardRole.OWNER));
-        return new UserRolesDTO(boardRepository.save(board).getMembers().getFirst());
+        board = boardRepository.save(board);
+        if (user.getDefaultBoardId()==null){
+            user.setDefaultBoardId(board.getId());
+            userRepository.save(user);
+        }
+
+        return new UserRolesDTO(board.getMembers().getFirst());
     }
 
     public Board findBoardByName(String boardName) {
@@ -36,33 +52,96 @@ public class BoardService {
 
     @Transactional
     public List<UserRolesDTO> addSubscriber(Board board, Users user) {
-            board.setUsersRoles(user, BoardRole.MEMBER);
-            boardRepository.save(board);
+        board.setUsersRoles(user, BoardRole.MEMBER);
+        boardRepository.save(board);
 
-            return board.getMembers().stream()
-                    .map(UserRolesDTO::new).collect(Collectors.toList());
-        }
+        return board.getMembers().stream()
+                .map(UserRolesDTO::new).collect(Collectors.toList());
+    }
 
     public boolean isUserMember(Board board, Users user) {
-      return userRolesRepo.existsByUserIdAndBoardId(user.getId(), board.getId());
+        return userRolesRepo.existsByUserIdAndBoardId(user.getId(), board.getId());
     }
 
 
-
-
-    public boolean isUserCanChangeBoard(Users user, Board board){
-        List<UsersRoles> boardMembers = board.getMembers();
-
-        UsersRoles usersRoles = boardMembers.stream().filter(ur -> ur.getUser().equals(user))
+    public boolean isUserCanChangeBoard(Users user, Board board) {
+        UsersRoles usersRoles = board.getMembers().stream().filter(ur -> ur.getUser().equals(user))
                 .findAny()
                 .orElse(null);
 
-        if(usersRoles!=null&&(usersRoles.getBoardRole().equals(BoardRole.OWNER)
-                ||usersRoles.getBoardRole().equals(BoardRole.MANAGER))){
+        if (usersRoles != null && (usersRoles.getBoardRole().equals(BoardRole.OWNER)
+                || usersRoles.getBoardRole().equals(BoardRole.MANAGER))) {
             return true;
-        }else {
+        } else {
             return false;
         }
+    }
+
+    @Transactional
+    public List<UserRolesDTO> deleteMember(Users user, Board board) {
+        UsersRoles userRole = board.getMembers().stream()
+                .filter(ur -> ur.getUser().getId().equals(user.getId()))
+                .findFirst().orElse(null);
+        if (!userRole.getBoardRole().equals(BoardRole.OWNER)) {
+            board.getMembers().remove(userRole);
+            user.getRoles().remove(userRole);
+            boardRepository.save(board);
+        }
+        return board.getMembers().stream().map(UserRolesDTO::new).collect(Collectors.toList());
+
+
+    }
+
+    public Board findBoardById(Long boardId) {
+        return boardRepository.findById(boardId).orElse(null);
+    }
+
+    public Task validateTaskRequest(CreateTaskDTO request) {
+        Task task = new Task();
+        Board board = findBoardById(request.getBoardId());
+        task.setName(request.getTitle());
+        task.setBoard(board);
+        task.setTaskStatus(TaskStatus.NOTSTARTED);
+        task.setCreatedDate(LocalDateTime.now());
+
+        if (request.getDescription() != null) {
+            task.setDescription(request.getDescription());
+        }
+
+        if (request.getDepartmentId() != null) {
+            Department department = depRepository.findById(request.getDepartmentId()).orElse(null);
+            if (department != null && board.getDepartments().contains(department)) {
+                task.setDepartment(department);
+            } else {
+                throw new IllegalArgumentException("Wrong department!");
+            }
+        }
+
+        if (request.getExecutorId() != null) {
+            Users executor = userRepository.findById(request.getExecutorId()).orElse(null);
+            if (executor != null && isUserMember(board, executor)) {
+                task.setExecutor(executor);
+            }
+        }
+        return task;
+    }
+
+    public BoardRole getUserBoardRole(Users user, Board board) {
+        UsersRoles userRole = board.getMembers().stream()
+                .filter(ur -> ur.getUser().getId().equals(user.getId()))
+                .findFirst().orElse(null);
+
+       if(userRole!=null){
+           return userRole.getBoardRole();
+       }else return null;
+
+    }
+
+    public BoardDTO getBoardInfo(Board board, BoardRole role) {
+        if (role==BoardRole.OWNER){
+            return new OwnerBoardDTO(board);
+        }
+        else return null;
     }
 
 //    public List<SubscriberDTO> getBoardSubscribers(Board board){

@@ -1,10 +1,10 @@
 package com.KotoPorot.Application_Demo.Repositories;
 
-import com.KotoPorot.Application_Demo.Entities.Board;
+import com.KotoPorot.Application_Demo.Entities.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BoardRepository extends JpaRepository<Board, Long> {
-    Board findBoardByName(String name);
+public interface DepRepository extends JpaRepository<Department, Long> {
+    Department findByName(String name);
 }

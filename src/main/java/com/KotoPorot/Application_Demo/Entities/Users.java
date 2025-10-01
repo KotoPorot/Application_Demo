@@ -18,27 +18,29 @@ import java.util.Objects;
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String username;
 
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    private Long defaultBoardId;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonManagedReference(value = "subs")
     private List<UsersRoles> roles = new ArrayList<>();
 
 
-    @ManyToMany(mappedBy = "members")
-    @JsonManagedReference
+    @ManyToMany(mappedBy = "members", fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Department> departments;
 
-    @OneToMany(mappedBy = "executor")
+    @OneToMany(mappedBy = "executor", fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Task> userTasks;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "respDep_id")
     private Department respDep;
 
@@ -46,7 +48,7 @@ public class Users {
     public Users() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -98,6 +100,26 @@ public class Users {
         this.userTasks = userTasks;
     }
 
+    public Department getRespDep() {
+        return respDep;
+    }
+
+    public void setRespDep(Department respDep) {
+        this.respDep = respDep;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getDefaultBoardId() {
+        return defaultBoardId;
+    }
+
+    public void setDefaultBoardId(Long defaultBoardId) {
+        this.defaultBoardId = defaultBoardId;
+    }
+
     @Override
     public String toString() {
         return "Users{" +
@@ -122,4 +144,5 @@ public class Users {
     public int hashCode() {
         return Objects.hash(id, username, password, roles, departments, userTasks, respDep);
     }
+
 }

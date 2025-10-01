@@ -1,16 +1,18 @@
 package com.KotoPorot.Application_Demo.Login_registration.Service;
 
 
-import com.KotoPorot.Application_Demo.Enums.Role;
 import com.KotoPorot.Application_Demo.Entities.Users;
 import com.KotoPorot.Application_Demo.Login_registration.DTO.UsersRegistrationDTO;
 import com.KotoPorot.Application_Demo.Repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -29,6 +31,7 @@ public class UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @Transactional
     public Users addUser(UsersRegistrationDTO userDTO) {
         if (userRepository.findByUsername(userDTO.getUsername()) != null) {
             throw new IllegalArgumentException("Username already exists");
@@ -52,5 +55,9 @@ public class UserService {
 
     public Users findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public Users findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 }

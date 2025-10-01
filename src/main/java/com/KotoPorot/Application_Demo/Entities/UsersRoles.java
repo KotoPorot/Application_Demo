@@ -18,12 +18,12 @@ public class UsersRoles {
     @Enumerated(EnumType.STRING)
     private BoardRole boardRole;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference(value = "subs")
     private Users user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id", nullable = false)
     @JsonBackReference(value = "board_subs")
     private Board board;
@@ -66,6 +66,14 @@ public class UsersRoles {
 
     public void setBoardRole(BoardRole boardRole) {
         this.boardRole = boardRole;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

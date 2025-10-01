@@ -4,6 +4,7 @@ import com.KotoPorot.Application_Demo.Enums.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,20 +16,20 @@ public class Task {
 
     private String name;
     private String description;
-    private Date createdDate;
+    private LocalDateTime createdDate;
     private TaskStatus taskStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     @JsonBackReference
     private Board board;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name ="department_id")
     @JsonBackReference
     private Department department;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name ="user_id")
     @JsonBackReference
     private Users executor;
@@ -60,11 +61,11 @@ public class Task {
         this.description = description;
     }
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -99,4 +100,9 @@ public class Task {
     public void setExecutor(Users executor) {
         this.executor = executor;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
 }
