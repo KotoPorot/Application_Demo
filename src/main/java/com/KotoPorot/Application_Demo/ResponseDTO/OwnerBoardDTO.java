@@ -1,10 +1,6 @@
 package com.KotoPorot.Application_Demo.ResponseDTO;
 
 import com.KotoPorot.Application_Demo.Entities.Board;
-import com.KotoPorot.Application_Demo.Entities.Department;
-import com.KotoPorot.Application_Demo.Entities.Task;
-import com.KotoPorot.Application_Demo.Entities.UsersRoles;
-import com.KotoPorot.Application_Demo.RequestsDTO.MemberDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;

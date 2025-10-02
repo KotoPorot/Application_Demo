@@ -1,9 +1,9 @@
 package com.KotoPorot.Application_Demo.RequestsDTO;
 
-public class CreateBoardDTO {
-    private String boardName;
+public class CreateBoardRequestDTO {
+    private String boardName; //Required from user
 
-    public CreateBoardDTO(String boardName) {
+    public CreateBoardRequestDTO(String boardName) {
         this.boardName = boardName;
     }
 

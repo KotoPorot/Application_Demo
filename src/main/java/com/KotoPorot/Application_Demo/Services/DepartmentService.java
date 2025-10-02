@@ -6,11 +6,8 @@ import com.KotoPorot.Application_Demo.Entities.Users;
 import com.KotoPorot.Application_Demo.Repositories.BoardRepository;
 import com.KotoPorot.Application_Demo.Repositories.DepRepository;
 import com.KotoPorot.Application_Demo.Repositories.UserRepository;
-import com.KotoPorot.Application_Demo.RequestsDTO.CreateDepDTO;
-import jakarta.persistence.EntityManager;
+import com.KotoPorot.Application_Demo.RequestsDTO.CreateDepRequestDTO;
 import jakarta.transaction.Transactional;
-
-import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +25,7 @@ public class DepartmentService {
 
 
     @Transactional
-    public Department createDepartment(CreateDepDTO depDTO, Board board) {
+    public Department createDepartment(CreateDepRequestDTO depDTO, Board board) {
         Department existDep = board.getDepartments().stream()
                 .filter(dep -> dep.getName().equals(depDTO.getName()))
                 .findFirst().orElse(null);
@@ -58,9 +55,9 @@ public class DepartmentService {
     }
 
     public boolean isMember(Users member, Department department) {
-      if(department.getMembers().contains(member)){
-          return true;
-      }else return false;
+        if (department.getMembers().contains(member)) {
+            return true;
+        } else return false;
 
     }
 

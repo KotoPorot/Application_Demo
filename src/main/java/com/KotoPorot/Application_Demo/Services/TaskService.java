@@ -17,10 +17,8 @@ public class TaskService {
     private UserRepository userRepository;
 
     public Task saveTask(Task task) {
-        System.out.println("before save: "+task);
-       task = taskRepository.save(task);
-        System.out.println("after save: "+task);
-       return task;
+        task = taskRepository.save(task);
+        return task;
 
     }
 
