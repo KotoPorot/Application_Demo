@@ -1,6 +1,6 @@
 package com.KotoPorot.Application_Demo.Entities;
 
-import com.KotoPorot.Application_Demo.RequestsDTO.CreateDepDTO;
+import com.KotoPorot.Application_Demo.RequestsDTO.CreateDepRequestDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -93,7 +93,7 @@ public class Department {
         this.responsibleManager = responsibleManager;
     }
 
-    public Department(CreateDepDTO depDTO, Board board) {
+    public Department(CreateDepRequestDTO depDTO, Board board) {
         this.name = depDTO.getName();
         this.board = board;
     }

@@ -3,13 +3,9 @@ package com.KotoPorot.Application_Demo.Controllers;
 import com.KotoPorot.Application_Demo.Entities.Department;
 import com.KotoPorot.Application_Demo.Entities.Task;
 import com.KotoPorot.Application_Demo.Enums.BoardRole;
+import com.KotoPorot.Application_Demo.RequestsDTO.*;
 import com.KotoPorot.Application_Demo.ResponseDTO.UserDTO;
-import com.KotoPorot.Application_Demo.RequestsDTO.CreateDepDTO;
-import com.KotoPorot.Application_Demo.RequestsDTO.CreateTaskDTO;
-import com.KotoPorot.Application_Demo.RequestsDTO.MemberDTO;
-import com.KotoPorot.Application_Demo.RequestsDTO.CreateBoardDTO;
 import com.KotoPorot.Application_Demo.ResponseDTO.BoardDTO;
-import com.KotoPorot.Application_Demo.ResponseDTO.OwnerBoardDTO;
 import com.KotoPorot.Application_Demo.ResponseDTO.UserRolesDTO;
 import com.KotoPorot.Application_Demo.Entities.Board;
 import com.KotoPorot.Application_Demo.Entities.Users;
@@ -21,10 +17,10 @@ import com.KotoPorot.Application_Demo.Services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -39,8 +35,10 @@ public class BoardController {
     @Autowired
     private TaskService taskService;
 
+    //All OK
     @PostMapping("/createBoard")
-    public ResponseEntity<UserRolesDTO> createBoard(@RequestBody CreateBoardDTO board, @NonNull Authentication authentication) {
+    public ResponseEntity<UserRolesDTO> createBoard(@RequestBody CreateBoardRequestDTO board,
+                                                    Authentication authentication) {
         if (authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserPrincipal) {
             Users user = userService.findByUsername(((UserPrincipal) authentication.getPrincipal()).getUsername());
             if (boardService.findBoardByName(board.getBoardName()) != null) {
@@ -51,56 +49,59 @@ public class BoardController {
         return ResponseEntity.badRequest().build();
     }
 
+    //All OK
     @PostMapping("/addBoardMember")
-    public ResponseEntity<List<UserRolesDTO>> addSubscriber(@RequestBody MemberDTO request,
-                                                            Authentication authentication) {
-
+    public ResponseEntity<String> addSubscriber(@RequestBody AddBoardMemberRequestDTO request,
+                                          Authentication authentication) {
         if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
             Users executor = userService.findByUsername(((UserPrincipal) authentication.getPrincipal()).getUsername());
-            Board board = boardService.findBoardByName(request.getBoardName());
+            Board board = boardService.findBoardById(request.getBoardId());
             if (!boardService.isUserCanChangeBoard(executor, board)) {
-                System.out.println("cant change");
                 return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).build();
             }
             Users user = userService.findByUsername(request.getUserName());
             if (board == null || user == null || boardService.isUserMember(board, user)) {
-                System.out.println(board);
-                System.out.println(user);
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
-            List<UserRolesDTO> members = boardService.addSubscriber(board, user);
-            return ResponseEntity.ok(members);
+            try {
+                boardService.addBoardMember(board, user, request.getBoardRole());
+                return ResponseEntity.ok().build();
+            } catch (SecurityException e) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
         }
         return ResponseEntity.badRequest().build();
     }
 
 
+    //All OK
     @PostMapping("/deleteBoardMember")
-    public ResponseEntity<List<UserRolesDTO>> deleteMember(@RequestBody MemberDTO request,
-                                                           Authentication authentication) {
-        Users executor = userService.findByUsername(((UserPrincipal) authentication.getPrincipal()).getUsername());
-        Board board = boardService.findBoardByName(request.getBoardName());
+    public ResponseEntity<String> deleteMember(@RequestBody DeleteBoardMemberRequestDTO request,
+                                         Authentication authentication) {
+        Users executor = userService.findById(((UserPrincipal) authentication.getPrincipal()).getId());
+        Board board = boardService.findBoardById(request.getBoardId());
         if (executor == null || !boardService.isUserCanChangeBoard(executor, board)) {
             return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).build();
         }
-        Users user = userService.findByUsername(request.getUserName());
+        Users user = userService.findById(request.getUserId());
         if (board == null || user == null) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
         try {
-            return ResponseEntity.ok(boardService.deleteMember(user, board));
+            boardService.deleteMember(user, board);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-
     }
 
 
-    @PostMapping("/{boardId}/createDepartment")
-    public ResponseEntity<Department> createDepartment(@PathVariable Long boardId,
-                                                       @RequestBody CreateDepDTO request, Authentication auth) {
-        Users executor = userService.findByUsername(((UserPrincipal) auth.getPrincipal()).getUsername());
-        Board board = boardService.findBoardById(boardId);
+    //All OK
+    @PostMapping("/createDepartment")
+    public ResponseEntity<Department> createDepartment(@RequestBody CreateDepRequestDTO request,
+                                                       Authentication auth) {
+        Users executor = userService.findById(((UserPrincipal) auth.getPrincipal()).getId());
+        Board board = boardService.findBoardById(request.getBoardId());
         if (board == null || !boardService.isUserCanChangeBoard(executor, board)) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
@@ -109,23 +110,18 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         return ResponseEntity.ok(department);
-
     }
 
-    //Заменить MemberDTO на PathVariable user_id
-    @PostMapping("/{boardId}/{departmentId}/addMember")
-    public ResponseEntity<List<Users>> addDepMember(@PathVariable Long boardId,
-                                                    @PathVariable Long departmentId,
-                                                    @RequestBody MemberDTO memberDTO, Authentication auth) {
+
+    //All OK
+    @PostMapping("/addDepartmentMember")
+    public ResponseEntity<List<Users>> addDepMember(@RequestBody AddDepMemberRequestDTO request,
+                                                    Authentication auth) {
 
         Users executor = userService.findById(((UserPrincipal) auth.getPrincipal()).getId());
-        System.out.println(executor);
-        Department department = depService.findDepartmentById(departmentId);
-        System.out.println(department);
-        Board board = boardService.findBoardById(boardId);
-        System.out.println(board);
-        Users member = userService.findByUsername(memberDTO.getUserName());
-        System.out.println(member);
+        Department department = depService.findDepartmentById(request.getDepartmentId());
+        Board board = boardService.findBoardById(request.getBoardId());
+        Users member = userService.findById(request.getUserId());
 
         if (executor == null || department == null || board == null || member == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -136,25 +132,26 @@ public class BoardController {
         if (depService.isMember(member, department)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-
-        return ResponseEntity.ok(depService.addMember(department, member));
+        depService.addMember(department, member);
+        return ResponseEntity.ok().build();
 
     }
 
 
-    //Дописать логику задач пользователя
+    //All OK
     @GetMapping("/getUserInfo")
     public ResponseEntity<UserDTO> getUserInfo(Authentication auth) {
         Users user = userService.findById(((UserPrincipal) auth.getPrincipal()).getId());
         return ResponseEntity.ok(new UserDTO(user));
     }
 
-    @PostMapping("/{departmentId}/{userId}/deleteDepMember")
-    public ResponseEntity<List<Users>> deleteDepMember(@PathVariable Long departmentId,
-                                                       @PathVariable Long userId, Authentication auth) {
+    //All OK
+    @PostMapping("/deleteDepMember")
+    public ResponseEntity<String> deleteDepMember(@RequestBody DeleteDepMemberDTO request,
+                                            Authentication auth) {
         Users executor = userService.findById(((UserPrincipal) auth.getPrincipal()).getId());
-        Department department = depService.findDepartmentById(departmentId);
-        Users member = userService.findById(userId);
+        Department department = depService.findDepartmentById(request.getDepartmentId());
+        Users member = userService.findById(request.getUserId());
 
         if (executor == null || department == null || member == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -162,12 +159,13 @@ public class BoardController {
         if (!boardService.isUserCanChangeBoard(executor, department.getBoard()) || !depService.isMember(member, department)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
-        return ResponseEntity.ok(depService.deleteMember(department, member));
+        depService.deleteMember(department, member);
+        return ResponseEntity.ok().build();
     }
 
+    //All OK
     @PostMapping("/createTask")
-    public ResponseEntity<Task> createTask(@RequestBody CreateTaskDTO request, Authentication auth) {
+    public ResponseEntity<Task> createTask(@RequestBody CreateTaskRequestDTO request, Authentication auth) {
         Board board = boardService.findBoardById(request.getBoardId());
 
         if (board == null || request.getTitle() == null) {
@@ -188,10 +186,14 @@ public class BoardController {
 
     }
 
+    //Change getting board info by roles (now all as owner)
     @GetMapping("/getBoardInfo")
     public ResponseEntity<BoardDTO> getBoardInfo(Authentication authentication) {
         Users user = userService.findById(((UserPrincipal) authentication.getPrincipal()).getId());
         Board board = boardService.findBoardById(user.getDefaultBoardId());
+        if (user == null || board == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         BoardRole role = boardService.getUserBoardRole(user, board);
         if (role == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

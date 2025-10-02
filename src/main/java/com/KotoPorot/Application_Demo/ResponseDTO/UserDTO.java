@@ -15,7 +15,7 @@ public class UserDTO {
 
     private List<UserDepartments> userDepartments;
 
-    private List<Task> userTasks;
+    private List<Long> userTasksId;
     private Department respDep;
     private Long defaultBoardId;
 
@@ -37,7 +37,7 @@ public class UserDTO {
                department.getId(), department.getName(),
                department.getBoard().getId(), department.getBoard().getName()
        )).collect(Collectors.toList());
-       this.userTasks = user.getUserTasks();
+       this.userTasksId = user.getUserTasks().stream().map(task -> task.getId()).collect(Collectors.toList());
   }
 
     public Long getUserId() {
@@ -72,12 +72,12 @@ public class UserDTO {
         this.userDepartments = userDepartments;
     }
 
-    public List<Task> getUserTasks() {
-        return userTasks;
+    public List<Long> getUserTasksId() {
+        return userTasksId;
     }
 
-    public void setUserTasks(List<Task> userTasks) {
-        this.userTasks = userTasks;
+    public void setUserTasksId(List<Long> userTasksId) {
+        this.userTasksId = userTasksId;
     }
 
     public Department getRespDep() {

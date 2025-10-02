@@ -1,16 +1,13 @@
 package com.KotoPorot.Application_Demo.RequestsDTO;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class CreateTaskRequestDTO {
+    private String title;   //Required from user
+    private String description; //Possible from user
+    private Long executorId;    //Possible from user
+    private Long departmentId;  //Possible from user
+    private Long boardId;   //Required from front
 
-public class CreateTaskDTO {
-    private String title;
-    private String description;
-    private Long executorId;
-    private Long departmentId;
-    private Long boardId;
-
-    public CreateTaskDTO() {
+    public CreateTaskRequestDTO() {
     }
 
 
