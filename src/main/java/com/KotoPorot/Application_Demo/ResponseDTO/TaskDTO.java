@@ -4,6 +4,7 @@ import com.KotoPorot.Application_Demo.Entities.Department;
 import com.KotoPorot.Application_Demo.Entities.Task;
 import com.KotoPorot.Application_Demo.Entities.Users;
 import com.KotoPorot.Application_Demo.Enums.TaskStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,8 @@ public class TaskDTO {
     private Long id;
     private String name;
     private String description;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
     private LocalDateTime createdDate;
     private TaskStatus taskStatus;
     private Long departmentId;

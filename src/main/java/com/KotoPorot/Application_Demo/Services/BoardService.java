@@ -38,11 +38,8 @@ public class BoardService {
         board.setName(name);
         board.getMembers().add(new UsersRoles(user, board, BoardRole.OWNER));
         board = boardRepository.save(board);
-        if (user.getDefaultBoardId() == null) {
-            user.setDefaultBoardId(board.getId());
-            userRepository.save(user);
-        }
-
+        user.setDefaultBoardId(board.getId());
+        userRepository.save(user);
         return new UserRolesDTO(board.getMembers().getFirst());
     }
 
@@ -52,10 +49,10 @@ public class BoardService {
 
     @Transactional
     public List<UserRolesDTO> addBoardMember(Board board, Users user, BoardRole role) {
-        if(role != null) {
-            if (!role.equals(BoardRole.OWNER)){
-            board.setUsersRoles(user, role);
-            }else {
+        if (role != null) {
+            if (!role.equals(BoardRole.OWNER)) {
+                board.setUsersRoles(user, role);
+            } else {
                 throw new SecurityException();
             }
         } else {

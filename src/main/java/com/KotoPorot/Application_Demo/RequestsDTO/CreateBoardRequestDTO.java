@@ -3,6 +3,7 @@ package com.KotoPorot.Application_Demo.RequestsDTO;
 public class CreateBoardRequestDTO {
     private String boardName; //Required from user
 
+
     public CreateBoardRequestDTO(String boardName) {
         this.boardName = boardName;
     }
