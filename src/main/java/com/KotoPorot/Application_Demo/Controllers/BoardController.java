@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -52,7 +53,7 @@ public class BoardController {
     //All OK
     @PostMapping("/addBoardMember")
     public ResponseEntity<String> addSubscriber(@RequestBody AddBoardMemberRequestDTO request,
-                                          Authentication authentication) {
+                                                Authentication authentication) {
         if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
             Users executor = userService.findByUsername(((UserPrincipal) authentication.getPrincipal()).getUsername());
             Board board = boardService.findBoardById(request.getBoardId());
@@ -77,7 +78,7 @@ public class BoardController {
     //All OK
     @PostMapping("/deleteBoardMember")
     public ResponseEntity<String> deleteMember(@RequestBody DeleteBoardMemberRequestDTO request,
-                                         Authentication authentication) {
+                                               Authentication authentication) {
         Users executor = userService.findById(((UserPrincipal) authentication.getPrincipal()).getId());
         Board board = boardService.findBoardById(request.getBoardId());
         if (executor == null || !boardService.isUserCanChangeBoard(executor, board)) {
@@ -148,7 +149,7 @@ public class BoardController {
     //All OK
     @PostMapping("/deleteDepMember")
     public ResponseEntity<String> deleteDepMember(@RequestBody DeleteDepMemberDTO request,
-                                            Authentication auth) {
+                                                  Authentication auth) {
         Users executor = userService.findById(((UserPrincipal) auth.getPrincipal()).getId());
         Department department = depService.findDepartmentById(request.getDepartmentId());
         Users member = userService.findById(request.getUserId());
@@ -199,6 +200,31 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(boardService.getBoardInfo(board, role));
+    }
+
+
+    @PostMapping("/setdefaultboard")
+    public ResponseEntity<String> setDefBoard(@RequestBody DefBoardRequestDTO defBoardDTO, Authentication auth) {
+        Users user = userService.findById(((UserPrincipal) auth.getPrincipal()).getId());
+        Board board = boardService.findBoardById(defBoardDTO.getDefaultBoardId());
+        if (user == null || board == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if (!boardService.isUserMember(board, user)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+        try {
+            user = userService.setDefaultBoard(user, board);
+            if(user.getDefaultBoardId().equals(defBoardDTO.getDefaultBoardId())){
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }else{
+                throw new Error("something went wrong");
+            }
+
+        } catch (Error e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
 }

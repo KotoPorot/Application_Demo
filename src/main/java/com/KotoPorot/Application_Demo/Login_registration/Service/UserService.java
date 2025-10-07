@@ -1,6 +1,7 @@
 package com.KotoPorot.Application_Demo.Login_registration.Service;
 
 
+import com.KotoPorot.Application_Demo.Entities.Board;
 import com.KotoPorot.Application_Demo.Entities.Users;
 import com.KotoPorot.Application_Demo.Login_registration.DTO.UsersRegistrationDTO;
 import com.KotoPorot.Application_Demo.Repositories.UserRepository;
@@ -43,11 +44,11 @@ public class UserService {
     }
 
     public String verify(UsersRegistrationDTO user) {
-        Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 user.getUsername(), user.getPassword()));
-        if(authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             return jwtService.generateToken(user.getUsername());
-        }else {
+        } else {
             return "false";
         }
 
@@ -59,5 +60,11 @@ public class UserService {
 
     public Users findById(Long id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    public Users setDefaultBoard(Users user, Board board) {
+        user.setDefaultBoardId(board.getId());
+        user = userRepository.save(user);
+        return user;
     }
 }
