@@ -33,6 +33,6 @@ npm run dev
 5. **Open in browser**
 
 - Visit `http://localhost:5173/`
-- Make sure that [backend server](../READMY.md) work too!
+- Make sure that [backend server](../README.md) work too!
 
 6. **Start developing application!**
