@@ -1,7 +1,18 @@
 import Modal from "../ui/Modal";
+import Members from "./Members";
 import { useState } from "react";
-export default function BoardHeader({ boardName, boardMembers }) {
-	const members = boardMembers.map((member) => <li>{member.username}</li>);
+export default function BoardHeader({
+	boardName,
+	boardMembers,
+	currentBoardId,
+}) {
+	let members = "loading...";
+	if (boardMembers) {
+		members = boardMembers.map((member) => (
+			<li key={member.userId}>{member.username}</li>
+		));
+	}
+
 	const [showModalMembers, setShowModalMembers] = useState(false);
 	return (
 		<div className="board-header">
@@ -11,18 +22,11 @@ export default function BoardHeader({ boardName, boardMembers }) {
 			</button>
 			{showModalMembers && (
 				<Modal>
-					<div className="members-container">
-						<h2>Board Members:</h2>
-						<ul>{members}</ul>
-
-						<button className="add-member new">Add member</button>
-						<button
-							className="close-btn"
-							onClick={() => setShowModalMembers(false)}
-						>
-							Close
-						</button>
-					</div>
+					<Members
+						members={members}
+						setShowModalMembers={setShowModalMembers}
+						currentBoardId={currentBoardId}
+					/>
 				</Modal>
 			)}
 		</div>

@@ -11,6 +11,7 @@ export default function Task({ taskData }) {
 			</li>
 			{showTask && (
 				<Modal>
+					{console.log(taskData)}
 					<h2 className="modal-title">{taskData.name}</h2>
 					<h4 className="sub-title">Description:</h4>
 					<p>{taskData.description}</p>

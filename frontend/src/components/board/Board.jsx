@@ -14,7 +14,11 @@ export default function Board({
 }) {
 	return (
 		<div className="board-container">
-			<BoardHeader boardName={boardName} boardMembers={currBoardData.members} />
+			<BoardHeader
+				boardName={boardName}
+				boardMembers={currBoardData.members}
+				currentBoardId={currBoardData.boardId}
+			/>
 			<div className="board__wrap-content">
 				<div className="board__main-content">
 					<BoardTaskList
