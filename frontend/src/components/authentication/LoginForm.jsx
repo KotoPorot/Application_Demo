@@ -1,14 +1,11 @@
-import { useRef } from "react";
 export default function LoginForm() {
-	const username = useRef(null);
-	const password = useRef(null);
-	function login() {
+	function login(formData) {
 		fetch("http://localhost:8080/login", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
-				username: username.current.value,
-				password: password.current.value,
+				username: formData.get("username"),
+				password: formData.get("password"),
 			}),
 		})
 			.then((res) => res.text())
@@ -19,34 +16,32 @@ export default function LoginForm() {
 	}
 
 	return (
-		<>
+		<form action={login} className="auth-modal__main-content">
+			<label htmlFor="username">Username:</label>
 			<input
-				ref={username}
 				type="text"
 				name="username"
+				id="username"
 				className="auth-modal__input"
-				placeholder="username"
+				placeholder="John Doe"
 				required
 				minLength="3"
 			/>
+
+			<label htmlFor="password">Password:</label>
 			<input
-				ref={password}
 				id="password"
 				type="password"
 				name="password"
 				className="auth-modal__input"
-				placeholder="password"
+				placeholder="*******"
 				required
 				minLength="3"
 			/>
-			<button
-				type="button"
-				className="auth-modal__submit"
-				onClick={login}
-				id="login"
-			>
+
+			<button type="submit" className="auth-modal__submit" id="login">
 				login
 			</button>
-		</>
+		</form>
 	);
 }

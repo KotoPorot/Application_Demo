@@ -1,14 +1,11 @@
-import { useRef } from "react";
 export default function RegisterForm() {
-	const username = useRef(null);
-	const password = useRef(null);
-	function registration() {
+	function registration(formData) {
 		fetch("http://localhost:8080/register", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
-				username: username.current.value,
-				password: password.current.value,
+				username: formData.get("username"),
+				password: formData.get("password"),
 			}),
 		})
 			.then((res) => {
@@ -20,8 +17,8 @@ export default function RegisterForm() {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
-						username: username.current.value,
-						password: password.current.value,
+						username: formData.get("username"),
+						password: formData.get("password"),
 					}),
 				})
 					.then((res) => res.text())
@@ -32,34 +29,31 @@ export default function RegisterForm() {
 			});
 	}
 	return (
-		<>
+		<form action={registration} className="auth-modal__main-content">
+			<label htmlFor="username">Username:</label>
 			<input
-				ref={username}
 				type="text"
 				name="username"
+				id="username"
 				className="auth-modal__input"
-				placeholder="username"
+				placeholder="John Doe"
 				required
 				minLength="3"
 			/>
+
+			<label htmlFor="password">Password:</label>
 			<input
-				ref={password}
 				id="password"
 				type="password"
-				className="auth-modal__input"
 				name="password"
-				placeholder="password"
+				className="auth-modal__input"
+				placeholder="*******"
 				required
 				minLength="3"
 			/>
-			<button
-				type="button"
-				onClick={registration}
-				className="auth-modal__submit"
-				id="register"
-			>
+			<button type="submit" className="auth-modal__submit" id="register">
 				Sign up
 			</button>
-		</>
+		</form>
 	);
 }

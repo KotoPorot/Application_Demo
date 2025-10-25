@@ -1,13 +1,10 @@
-import { useRef } from "react";
 export default function NewBoard({
 	TOKEN,
 	setCurrentBoardId,
 	setShowModal,
 	closeButton,
 }) {
-	const boardName = useRef();
-
-	function createBoard() {
+	function createBoard(formData) {
 		fetch("http://localhost:8080/createBoard", {
 			method: "POST",
 			headers: {
@@ -15,7 +12,7 @@ export default function NewBoard({
 				Authorization: `Bearer ${TOKEN}`,
 			},
 			body: JSON.stringify({
-				boardName: boardName.current.value,
+				boardName: formData.get("boardName"),
 			}),
 		})
 			.then((res) => res.json())
@@ -25,16 +22,19 @@ export default function NewBoard({
 			});
 	}
 	return (
-		<>
+		<form action={createBoard} className="form-content">
 			<h2 className="title">Create new board</h2>
+			<label htmlFor="boardName">Board name:</label>
 			<input
-				ref={boardName}
+				className="input"
+				name="boardName"
+				id="boardName"
 				type="text"
-				placeholder="Board name"
+				placeholder="NewTech GmbH"
 				required
 				minLength="1"
 			/>
-			<button onClick={createBoard} type="button">
+			<button onClick={createBoard} type="submit" className="submit-btn">
 				Create board
 			</button>
 			{closeButton && (
@@ -42,6 +42,6 @@ export default function NewBoard({
 					close
 				</button>
 			)}
-		</>
+		</form>
 	);
 }

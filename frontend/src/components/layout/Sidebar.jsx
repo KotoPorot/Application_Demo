@@ -7,7 +7,7 @@ export default function Sidebar({
 	setShowModal,
 	currentBoardId,
 	setCurrentBoardId,
-	setCurrentDepartmentId,
+	setRefreshBoardData,
 }) {
 	return (
 		<aside className="sidebar">
@@ -22,7 +22,7 @@ export default function Sidebar({
 			<DepartmentList
 				departmentsData={currBoardData.boardDepartments}
 				currentBoardId={currentBoardId}
-				setCurrentDepartmentId={setCurrentDepartmentId}
+				setRefreshBoardData={setRefreshBoardData}
 			/>
 		</aside>
 	);

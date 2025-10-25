@@ -33,10 +33,10 @@ export default function AuthModal() {
 					register
 				</button>
 			</div>
-			<form className="auth-modal__main-content">
+			<>
 				{loginOrRegister === "login" && <LoginForm />}
 				{loginOrRegister === "register" && <RegisterForm />}
-			</form>
+			</>
 		</div>
 	);
 }

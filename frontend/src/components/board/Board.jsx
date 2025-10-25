@@ -11,6 +11,7 @@ export default function Board({
 	showCreateTask,
 	setShowCreateTask,
 	quantityOfTask,
+	setRefreshBoardData,
 }) {
 	return (
 		<div className="board-container">
@@ -18,6 +19,7 @@ export default function Board({
 				boardName={boardName}
 				boardMembers={currBoardData.members}
 				currentBoardId={currBoardData.boardId}
+				setRefreshBoardData={setRefreshBoardData}
 			/>
 			<div className="board__wrap-content">
 				<div className="board__main-content">

@@ -16,7 +16,7 @@ export default function Task({ taskData }) {
 					<h4 className="sub-title">Description:</h4>
 					<p>{taskData.description}</p>
 					<h4 className="sub-title">Department:</h4>
-					<p>{taskData.department}</p>
+					<p>Department ID is {taskData.id}</p>
 					<h4 className="sub-title">Status:</h4>
 					<p>{taskData.taskStatus}</p>
 					<button

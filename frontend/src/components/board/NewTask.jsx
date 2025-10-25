@@ -1,11 +1,6 @@
-import { useRef } from "react";
-
 export default function NewTask({ currBoardData, setShowCreateTask }) {
 	// TODO: private Long executorId;
 	const TOKEN = localStorage.getItem("token");
-	const currTitle = useRef("");
-	const currDescription = useRef("");
-	const currDepartment = useRef();
 
 	let departments = <></>;
 	if (currBoardData.boardDepartments) {
@@ -15,7 +10,7 @@ export default function NewTask({ currBoardData, setShowCreateTask }) {
 			</option>
 		));
 	}
-	function createTask() {
+	function createTask(formData) {
 		fetch("http://localhost:8080/createTask", {
 			method: "POST",
 			headers: {
@@ -23,11 +18,11 @@ export default function NewTask({ currBoardData, setShowCreateTask }) {
 				Authorization: `Bearer ${TOKEN}`,
 			},
 			body: JSON.stringify({
-				title: currTitle.current.value,
-				description: currDescription.current.value,
+				title: formData.get("task-title"),
+				description: formData.get("task-desc"),
 				boardId: currBoardData.boardId,
-				...(currDepartment.current?.value
-					? { departmentId: currDepartment.current?.value }
+				...(formData.get("task-department")
+					? { departmentId: formData.get("task-department") }
 					: {}),
 			}),
 		})
@@ -42,10 +37,11 @@ export default function NewTask({ currBoardData, setShowCreateTask }) {
 	return (
 		<>
 			<h2 className="modal-title">Create New Task</h2>
-			<form className="modal-form">
+			<form action={createTask} className="modal-form">
 				<label htmlFor="task-title">Task Title:</label>
 				<input
-					ref={currTitle}
+					className="input"
+					placeholder="Take a brake"
 					type="text"
 					id="task-title"
 					name="task-title"
@@ -53,23 +49,17 @@ export default function NewTask({ currBoardData, setShowCreateTask }) {
 				/>
 				<label htmlFor="task-desc">Description:</label>
 				<textarea
-					ref={currDescription}
+					className="input"
 					id="task-desc"
 					name="task-desc"
 					rows="4"
-					required
 				></textarea>
 				<label htmlFor="task-department">Select department:</label>
-				<select
-					ref={currDepartment}
-					id="task-department"
-					name="task-department"
-					required
-				>
+				<select id="task-department" name="task-department">
 					<option value="">none</option>
 					{departments}
 				</select>
-				<button type="button" onClick={createTask} className="submit-btn">
+				<button type="submit" className="submit-btn">
 					Add Task
 				</button>
 				<button

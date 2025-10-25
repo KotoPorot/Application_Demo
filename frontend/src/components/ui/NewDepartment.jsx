@@ -1,13 +1,11 @@
-import { useRef } from "react";
 export default function NewDepartment({
 	currentBoardId,
 	showCreateDepartment,
 	setShowCreateDepartment,
-	setCurrentDepartmentId,
+	setRefreshBoardData,
 }) {
-	const departmentName = useRef();
 	const TOKEN = localStorage.getItem("token");
-	function createDepartment() {
+	function createDepartment(formData) {
 		fetch("http://localhost:8080/createDepartment", {
 			method: "POST",
 			headers: {
@@ -16,26 +14,29 @@ export default function NewDepartment({
 			},
 			body: JSON.stringify({
 				boardId: currentBoardId,
-				name: departmentName.current.value,
+				name: formData.get("departmentName"),
 			}),
 		})
-			.then((res) => res.json())
-			.then((data) => {
+			.then((res) => res)
+			.then(() => {
 				setShowCreateDepartment(false);
-				setCurrentDepartmentId(data.id);
+				setRefreshBoardData((prev) => !prev);
 			});
 	}
 	return (
-		<>
+		<form action={createDepartment} className="form-content">
 			<h2 className="title">Create new department</h2>
+			<label htmlFor="departmentName">Department name:</label>
 			<input
-				ref={departmentName}
+				className="input"
+				name="departmentName"
+				id="departmentName"
 				type="text"
-				placeholder="Department name"
+				placeholder="Customer Support"
 				required
 				minLength="1"
 			/>
-			<button onClick={createDepartment} type="button">
+			<button type="submit" className="submit-btn">
 				Create department
 			</button>
 			{showCreateDepartment && (
@@ -46,6 +47,6 @@ export default function NewDepartment({
 					close
 				</button>
 			)}
-		</>
+		</form>
 	);
 }

@@ -1,13 +1,12 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 export default function Members({
 	members,
 	setShowModalMembers,
 	currentBoardId,
+	setRefreshBoardData,
 }) {
-	const newMemberName = useRef();
-	const newMemberRole = useRef("MEMBER");
 	const [showAddMember, setShowAddMember] = useState(false);
-	function addMemberHandler() {
+	function addMemberHandler(formData) {
 		const TOKEN = localStorage.getItem("token");
 		fetch("http://localhost:8080/addBoardMember", {
 			method: "POST",
@@ -16,39 +15,41 @@ export default function Members({
 				Authorization: `Bearer ${TOKEN}`,
 			},
 			body: JSON.stringify({
-				userName: newMemberName.current.value,
+				userName: formData.get("new-member-name"),
 				boardId: currentBoardId,
-				boardRole: newMemberRole.current.value,
+				boardRole: formData.get("role"),
 			}),
 		})
-			.then((res) => res.json())
-			.then((data) => {
-				console.log("Success:", data);
+			.then((res) => res)
+			.then(() => {
 				setShowAddMember(false);
 				setShowModalMembers(false);
+				setRefreshBoardData((prev) => !prev);
 			});
 	}
 	return (
 		<div className="members-container">
 			{showAddMember ? (
-				<>
+				<form action={addMemberHandler} className="form-content">
 					<label htmlFor="new-member-name">Member name</label>
 					<input
-						ref={newMemberName}
+						name="new-member-name"
 						type="text"
 						id="new-member-name"
 						className="input"
 						required
 					/>
 					<label htmlFor="select-role">Select role:</label>
-					<select ref={newMemberRole} name="role" id="select-role">
-						<option value="MEMBER">Member</option>
+					<select name="role" id="select-role" defaultValue={"MEMBER"} required>
+						<option value="MEMBER" required>
+							Member
+						</option>
 						<option value="MANAGER">Manager</option>
 					</select>
-					<button onClick={addMemberHandler} className="add-member new">
+					<button type="submit" className="submit-btn">
 						Add member
 					</button>
-				</>
+				</form>
 			) : (
 				<>
 					<h2>Board Members:</h2>

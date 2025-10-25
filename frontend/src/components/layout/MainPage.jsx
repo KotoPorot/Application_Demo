@@ -7,11 +7,14 @@ import NewBoard from "../ui/NewBoard";
 import Modal from "../ui/Modal";
 
 export default function MainPage({ TOKEN }) {
+	const [userData, setUserData] = React.useState([]);
+	const [currentBoardId, setCurrentBoardId] = React.useState(null);
+
 	const [showCreateTask, setShowCreateTask] = React.useState(false);
 	const [showModal, setShowModal] = React.useState(false);
-	const [currentBoardId, setCurrentBoardId] = React.useState(null);
-	const [currentDepartmentId, setCurrentDepartmentId] = React.useState(null);
-	const [userData, setUserData] = React.useState([]);
+
+	const [refreshBoardData, setRefreshBoardData] = React.useState(false);
+
 	const [boardData, setBoardData] = React.useState([]);
 	let quantityOfTask = React.useRef(0);
 
@@ -58,7 +61,7 @@ export default function MainPage({ TOKEN }) {
 					// boardData.members
 				});
 		}
-	}, [currentDepartmentId, currentBoardId, TOKEN, showCreateTask]);
+	}, [refreshBoardData, currentBoardId, TOKEN, showCreateTask]);
 	return (
 		<>
 			{!currentBoardId && (
@@ -81,7 +84,7 @@ export default function MainPage({ TOKEN }) {
 					setShowModal={setShowModal}
 					setCurrentBoardId={setCurrentBoardId}
 					currentBoardId={currentBoardId}
-					setCurrentDepartmentId={setCurrentDepartmentId}
+					setRefreshBoardData={setRefreshBoardData}
 				/>
 				<Board
 					currBoardData={boardData}
@@ -89,6 +92,7 @@ export default function MainPage({ TOKEN }) {
 					showCreateTask={showCreateTask}
 					setShowCreateTask={setShowCreateTask}
 					quantityOfTask={quantityOfTask.current}
+					setRefreshBoardData={setRefreshBoardData}
 				/>
 			</div>
 		</>

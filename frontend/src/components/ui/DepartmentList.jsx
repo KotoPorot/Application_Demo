@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function DepartmentList({
 	departmentsData,
 	currentBoardId,
-	setCurrentDepartmentId,
+	setRefreshBoardData,
 }) {
 	const [showCreateDepartment, setShowCreateDepartment] = useState(false);
 
@@ -35,7 +35,7 @@ export default function DepartmentList({
 						currentBoardId={currentBoardId}
 						showCreateDepartment={showCreateDepartment}
 						setShowCreateDepartment={setShowCreateDepartment}
-						setCurrentDepartmentId={setCurrentDepartmentId}
+						setRefreshBoardData={setRefreshBoardData}
 					/>
 				</Modal>
 			)}

@@ -5,11 +5,14 @@ export default function BoardHeader({
 	boardName,
 	boardMembers,
 	currentBoardId,
+	setRefreshBoardData,
 }) {
 	let members = "loading...";
 	if (boardMembers) {
 		members = boardMembers.map((member) => (
-			<li key={member.userId}>{member.username}</li>
+			<li className="title" key={member.userId}>
+				{member.username}
+			</li>
 		));
 	}
 
@@ -26,6 +29,7 @@ export default function BoardHeader({
 						members={members}
 						setShowModalMembers={setShowModalMembers}
 						currentBoardId={currentBoardId}
+						setRefreshBoardData={setRefreshBoardData}
 					/>
 				</Modal>
 			)}
