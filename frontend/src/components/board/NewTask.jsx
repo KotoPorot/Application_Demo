@@ -1,10 +1,14 @@
-export default function NewTask({ currBoardData, setShowCreateTask }) {
+import { useContext } from "react";
+import { BoardContext, UserContext } from "../../context/Contexts";
+
+export default function NewTask({ setShowCreateTask }) {
+	const { TOKEN, currentBoardId } = useContext(UserContext);
+	const { boardDepartments, setRefreshBoardData } = useContext(BoardContext);
 	// TODO: private Long executorId;
-	const TOKEN = localStorage.getItem("token");
 
 	let departments = <></>;
-	if (currBoardData.boardDepartments) {
-		departments = currBoardData.boardDepartments.map((dep) => (
+	if (boardDepartments) {
+		departments = boardDepartments.map((dep) => (
 			<option key={dep.id} value={dep.id}>
 				{dep.name}
 			</option>
@@ -20,17 +24,18 @@ export default function NewTask({ currBoardData, setShowCreateTask }) {
 			body: JSON.stringify({
 				title: formData.get("task-title"),
 				description: formData.get("task-desc"),
-				boardId: currBoardData.boardId,
+				boardId: currentBoardId,
 				...(formData.get("task-department")
 					? { departmentId: formData.get("task-department") }
 					: {}),
 			}),
 		})
 			.then((res) => {
-				return res.json();
+				return res;
 			})
 			.then(() => {
 				setShowCreateTask(false);
+				setRefreshBoardData((prev) => !prev);
 			});
 	}
 

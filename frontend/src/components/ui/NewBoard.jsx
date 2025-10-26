@@ -1,9 +1,8 @@
-export default function NewBoard({
-	TOKEN,
-	setCurrentBoardId,
-	setShowModal,
-	closeButton,
-}) {
+import { useContext } from "react";
+import { UserContext } from "../../context/Contexts";
+
+export default function NewBoard({ setShowModal, closeButton }) {
+	const { TOKEN, setCurrentBoardId } = useContext(UserContext);
 	function createBoard(formData) {
 		fetch("http://localhost:8080/createBoard", {
 			method: "POST",
@@ -34,7 +33,7 @@ export default function NewBoard({
 				required
 				minLength="1"
 			/>
-			<button onClick={createBoard} type="submit" className="submit-btn">
+			<button type="submit" className="submit-btn">
 				Create board
 			</button>
 			{closeButton && (

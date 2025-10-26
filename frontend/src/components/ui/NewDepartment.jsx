@@ -1,10 +1,12 @@
+import { UserContext, BoardContext } from "../../context/Contexts";
+import { useContext } from "react";
+
 export default function NewDepartment({
-	currentBoardId,
 	showCreateDepartment,
 	setShowCreateDepartment,
-	setRefreshBoardData,
 }) {
-	const TOKEN = localStorage.getItem("token");
+	const { TOKEN, currentBoardId } = useContext(UserContext);
+	const { setRefreshBoardData } = useContext(BoardContext);
 	function createDepartment(formData) {
 		fetch("http://localhost:8080/createDepartment", {
 			method: "POST",

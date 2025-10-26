@@ -10,6 +10,7 @@ export default function LoginForm() {
 		})
 			.then((res) => res.text())
 			.then((data) => {
+				console.log(data);
 				localStorage.setItem("token", data);
 				document.location.reload();
 			});

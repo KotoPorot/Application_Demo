@@ -1,8 +1,12 @@
 import Task from "./Task";
-export default function BoardTaskList({ tasksData, setShowCreateTask }) {
+import { useContext } from "react";
+import { BoardContext } from "../../context/Contexts";
+
+export default function BoardTaskList({ setShowCreateTask }) {
+	const { boardTasks } = useContext(BoardContext);
 	let taskList = "loading...";
-	if (tasksData) {
-		taskList = tasksData.map((data) => <Task key={data.id} taskData={data} />);
+	if (boardTasks) {
+		taskList = boardTasks.map((data) => <Task key={data.id} taskData={data} />);
 	}
 	return (
 		<ul className="task-list">

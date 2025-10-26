@@ -1,7 +1,11 @@
-export default function Header({ userName }) {
+import { useContext } from "react";
+import { UserContext } from "../../context/Contexts";
+
+export default function Header() {
+	const { username } = useContext(UserContext);
 	return (
 		<header className="header">
-			<h2 className="header__username">{userName}</h2>
+			<h2 className="header__username">{username}</h2>
 			<button
 				onClick={() => {
 					localStorage.removeItem("token");

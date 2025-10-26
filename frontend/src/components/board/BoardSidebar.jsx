@@ -1,4 +1,8 @@
-export default function BoardSidebar({ quantityOfTask }) {
+import { useContext } from "react";
+import { BoardContext } from "../../context/Contexts";
+
+export default function BoardSidebar() {
+	const { quantityOfTask } = useContext(BoardContext);
 	return (
 		<div className="board__sidebar">
 			<button className="toggle-my-task">show my task</button>

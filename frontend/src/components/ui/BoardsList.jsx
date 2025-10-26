@@ -1,14 +1,13 @@
 import NewBoard from "../ui/NewBoard";
 import Modal from "../ui/Modal";
-export default function BoardsList({
-	userBoardsData,
-	showModal,
-	setShowModal,
-	currentBoardId,
-	setCurrentBoardId,
-}) {
+import { UserContext } from "../../context/Contexts";
+import { useContext } from "react";
+
+export default function BoardsList({ showModal, setShowModal }) {
+	const { TOKEN, setCurrentBoardId, userBoards, currentBoardId } =
+		useContext(UserContext);
+
 	let names = "loading...";
-	const TOKEN = localStorage.getItem("token");
 	function chooseBoard(e) {
 		const targetToken = e.currentTarget.dataset.id;
 
@@ -28,8 +27,8 @@ export default function BoardsList({
 			});
 	}
 
-	if (userBoardsData) {
-		names = userBoardsData.map((boardData) =>
+	if (userBoards) {
+		names = userBoards.map((boardData) =>
 			boardData.boardId === Number(currentBoardId) ? (
 				<button
 					onClick={(e) => chooseBoard(e)}
@@ -61,12 +60,7 @@ export default function BoardsList({
 			</button>
 			{showModal && (
 				<Modal>
-					<NewBoard
-						TOKEN={localStorage.getItem("token")}
-						setCurrentBoardId={setCurrentBoardId}
-						setShowModal={setShowModal}
-						closeButton={true}
-					/>
+					<NewBoard setShowModal={setShowModal} closeButton={true} />
 				</Modal>
 			)}
 		</div>

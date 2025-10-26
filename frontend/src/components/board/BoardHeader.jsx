@@ -1,15 +1,12 @@
 import Modal from "../ui/Modal";
 import Members from "./Members";
-import { useState } from "react";
-export default function BoardHeader({
-	boardName,
-	boardMembers,
-	currentBoardId,
-	setRefreshBoardData,
-}) {
-	let members = "loading...";
-	if (boardMembers) {
-		members = boardMembers.map((member) => (
+import { useState, useContext } from "react";
+import { BoardContext } from "../../context/Contexts";
+export default function BoardHeader() {
+	const { contextBoardName, members } = useContext(BoardContext);
+	let memberList = "loading...";
+	if (members) {
+		memberList = members.map((member) => (
 			<li className="title" key={member.userId}>
 				{member.username}
 			</li>
@@ -19,17 +16,15 @@ export default function BoardHeader({
 	const [showModalMembers, setShowModalMembers] = useState(false);
 	return (
 		<div className="board-header">
-			<h2 className="board__department-name">{boardName}</h2>
+			<h2 className="board__department-name">{contextBoardName}</h2>
 			<button onClick={() => setShowModalMembers(true)} className="member-btn">
 				Members
 			</button>
 			{showModalMembers && (
 				<Modal>
 					<Members
-						members={members}
+						memberList={memberList}
 						setShowModalMembers={setShowModalMembers}
-						currentBoardId={currentBoardId}
-						setRefreshBoardData={setRefreshBoardData}
 					/>
 				</Modal>
 			)}

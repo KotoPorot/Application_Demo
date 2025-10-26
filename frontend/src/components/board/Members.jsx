@@ -1,13 +1,12 @@
-import { useState } from "react";
-export default function Members({
-	members,
-	setShowModalMembers,
-	currentBoardId,
-	setRefreshBoardData,
-}) {
+import { useState, useContext } from "react";
+import { BoardContext, UserContext } from "../../context/Contexts";
+
+export default function Members({ memberList, setShowModalMembers }) {
+	const { setRefreshBoardData } = useContext(BoardContext);
+	const { currentBoardId, TOKEN } = useContext(UserContext);
 	const [showAddMember, setShowAddMember] = useState(false);
+
 	function addMemberHandler(formData) {
-		const TOKEN = localStorage.getItem("token");
 		fetch("http://localhost:8080/addBoardMember", {
 			method: "POST",
 			headers: {
@@ -53,7 +52,7 @@ export default function Members({
 			) : (
 				<>
 					<h2>Board Members:</h2>
-					<ul>{members}</ul>{" "}
+					<ul>{memberList}</ul>{" "}
 					<button
 						onClick={() => setShowAddMember(true)}
 						className="add-member new"

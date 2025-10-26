@@ -5,37 +5,19 @@ import BoardSidebar from "./BoardSidebar";
 import BoardTaskList from "./BoardTaskList";
 import NewTask from "./NewTask";
 
-export default function Board({
-	currBoardData,
-	boardName,
-	showCreateTask,
-	setShowCreateTask,
-	quantityOfTask,
-	setRefreshBoardData,
-}) {
+export default function Board({ showCreateTask, setShowCreateTask }) {
 	return (
 		<div className="board-container">
-			<BoardHeader
-				boardName={boardName}
-				boardMembers={currBoardData.members}
-				currentBoardId={currBoardData.boardId}
-				setRefreshBoardData={setRefreshBoardData}
-			/>
+			<BoardHeader />
 			<div className="board__wrap-content">
 				<div className="board__main-content">
-					<BoardTaskList
-						tasksData={currBoardData.boardTasks}
-						setShowCreateTask={setShowCreateTask}
-					/>
+					<BoardTaskList setShowCreateTask={setShowCreateTask} />
 				</div>
-				<BoardSidebar quantityOfTask={quantityOfTask} />
+				<BoardSidebar />
 			</div>
 			{showCreateTask && (
 				<Modal>
-					<NewTask
-						currBoardData={currBoardData}
-						setShowCreateTask={setShowCreateTask}
-					/>
+					<NewTask setShowCreateTask={setShowCreateTask} />
 				</Modal>
 			)}
 		</div>

@@ -1,19 +1,17 @@
 import Modal from "./Modal";
 import NewDepartment from "./NewDepartment";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { BoardContext } from "../../context/Contexts";
 
-export default function DepartmentList({
-	departmentsData,
-	currentBoardId,
-	setRefreshBoardData,
-}) {
+export default function DepartmentList() {
 	const [showCreateDepartment, setShowCreateDepartment] = useState(false);
+	const { boardDepartments } = useContext(BoardContext);
 
 	let departmentsName = "loading...";
-	if (departmentsData) {
-		departmentsName = departmentsData.map((departmentsData) => (
-			<button key={departmentsData.id} className="department-link">
-				{departmentsData.name}
+	if (boardDepartments) {
+		departmentsName = boardDepartments.map((boardDepartment) => (
+			<button key={boardDepartment.id} className="department-link">
+				{boardDepartment.name}
 			</button>
 		));
 	}
@@ -32,10 +30,8 @@ export default function DepartmentList({
 			{showCreateDepartment && (
 				<Modal>
 					<NewDepartment
-						currentBoardId={currentBoardId}
 						showCreateDepartment={showCreateDepartment}
 						setShowCreateDepartment={setShowCreateDepartment}
-						setRefreshBoardData={setRefreshBoardData}
 					/>
 				</Modal>
 			)}

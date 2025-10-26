@@ -1,29 +1,22 @@
 import BoardsList from "../ui/BoardsList";
 import DepartmentList from "../ui/DepartmentList";
-export default function Sidebar({
-	userBoardsData,
-	currBoardData,
-	showModal,
-	setShowModal,
-	currentBoardId,
-	setCurrentBoardId,
-	setRefreshBoardData,
-}) {
+import NewBoard from "../ui/NewBoard";
+import Modal from "../ui/Modal";
+import { UserContext } from "../../context/Contexts";
+import { useContext } from "react";
+
+export default function Sidebar({ showModal, setShowModal }) {
+	const { currentBoardId } = useContext(UserContext);
+
 	return (
 		<aside className="sidebar">
-			<BoardsList
-				userBoardsData={userBoardsData}
-				currBoardData={currBoardData}
-				showModal={showModal}
-				setShowModal={setShowModal}
-				setCurrentBoardId={setCurrentBoardId}
-				currentBoardId={currentBoardId}
-			/>
-			<DepartmentList
-				departmentsData={currBoardData.boardDepartments}
-				currentBoardId={currentBoardId}
-				setRefreshBoardData={setRefreshBoardData}
-			/>
+			{!currentBoardId && (
+				<Modal>
+					<NewBoard setShowModal={setShowModal} closeButton={false} />
+				</Modal>
+			)}
+			<BoardsList showModal={showModal} setShowModal={setShowModal} />
+			<DepartmentList />
 		</aside>
 	);
 }
